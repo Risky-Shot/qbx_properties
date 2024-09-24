@@ -326,8 +326,7 @@ RegisterNetEvent('qbx_properties:server:openStash', function()
     local player = exports.qbx_core:GetPlayer(playerSource)
     if not hasAccess(player.PlayerData.citizenid, propertyId) then return end
 
-    local property = MySQL.single.await('SELECT property_name FROM appartments WHERE id = ?', {propertyId})
-    exports.ox_inventory:forceOpenInventory(playerSource, 'stash', { id = string.format('qbx_properties_%s', property.property_name) })
+    exports.ox_inventory:forceOpenInventory(playerSource, 'stash', { id = string.format('apartments_%s', propertyId) })
 end)
 
 AddEventHandler('playerDropped', function ()

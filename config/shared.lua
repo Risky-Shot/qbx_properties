@@ -28,7 +28,12 @@ ApartmentOptions = {
         interior = 'DellPerroHeightsApt4',
         label = 'Del Perro Heights Apt',
         description = 'Enjoy ocean views far away from tourists and bums on Del Perro Beach.',
-        enter = vec3(-1447.35, -537.84, 34.74)
+        enter = vec3(-1447.35, -537.84, 34.74),
+		buy = {
+			coords = vec4(-1443.4236, -535.6743, 34.7402, 121.3957),
+			model = `U_M_Y_Ushi`,
+			ped = nil,
+		}
     },
 	--Remove Due to same area
     -- {
@@ -48,36 +53,51 @@ ApartmentOptions = {
         interior = '4IntegrityWayApt30',
         label = '4 Integrity Way Apt',
         description = 'An apartment so expansive, all your friends will immediately know how much you paid for it.',
-        enter = vec3(-47.52, -585.86, 37.95)
+        enter = vec3(-47.52, -585.86, 37.95),
+		buy = {
+			coords = vec4(-49.0459, -589.9213, 37.9530, 22.5750),
+			model = `U_M_Y_Ushi`,
+			ped = nil,
+		}
     },
     {
         interior = 'RichardMajesticApt2',
         label = 'Richard Majestic Apt',
         description = 'This breathtaking luxury condo is a stone\'s throw from AKAN Records and a Sperm Donor Clinic.',
-        enter = vec3(-936.15, -378.91, 38.96)
+        enter = vec3(-936.15, -378.91, 38.96),
+		buy = {
+			coords = vec4(-933.4673, -384.3326, 38.9613, 129.9039),
+			model = `U_M_Y_Ushi`,
+			ped = nil,
+		}
     },
     {
         interior = 'TinselTowersApt42',
         label = 'Tinsel Towers Apt',
         description = 'A picture-perfect lateral living experience in one of Los Santos most sought-after tower blocks.',
-        enter = vec3(-614.58, 46.52, 43.59)
+        enter = vec3(-614.58, 46.52, 43.59),
+		buy = {
+			coords = vec4(-617.8354, 44.5598, 43.5914, 184.1978),
+			model = `U_M_Y_Ushi`,
+			ped = nil,
+		}
     },
 }
 
 Garages = {
 	-- Dell Perro
 	{
-		appartmentCoords = vec3(-1447.35, -537.84, 34.74),
+		appartmentCoords = vec3(-1447.35, -537.84, 34.74), --Must be same as entry coords
 		spawn = {
 			vec4(-1491.2465, -522.5305, 32.4396, 35.2251),
 			vec4(-1480.8784, -512.0031, 32.4395, 33.7558),
 			vec4(-1473.5435, -506.5136, 32.4391, 34.4867),
 		},
-		dropOff = vec3(-1458.3442, -499.6631, 32.0971)
+		dropOff = vec3(-1458.3442, -499.6631, 32.0971) -- Garage can be accessed from here
 	},
 	-- Integrity Way
 	{
-		appartmentCoords = vec3(-59.4, -616.29, 37.36),
+		appartmentCoords = vec3(-47.52, -585.86, 37.95),
 		spawn = {
 			vec4(-10.4642, -642.4049, 35.3567, 250.6894),
 			vec4(-6.1266, -630.9563, 35.3571, 251.6850),
@@ -163,6 +183,7 @@ Interiors = {
 	},
 }
 
+-- Make sure to change in config/server.lua too
 GarageCarSpawn = {
 	[1] = vec4(515.0365, -2614.4829, -49.3736, 240.5865),
 	[2] = vec4(524.5573, -2618.3267, -49.3739, 119.9464),

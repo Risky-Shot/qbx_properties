@@ -390,6 +390,8 @@ function PreparePropertyMenu(propertyCoords)
     end
 end
 
+local points = {}
+
 CreateThread(function()
     for i = 1, #ApartmentOptions do
         local data = ApartmentOptions[i]
@@ -397,6 +399,42 @@ CreateThread(function()
         if not blips[data.enter] then
             blips[data.enter] = CreateBlip(data.enter, data.label, 40)
         end
+
+        local apartPoint = lib.points.new({
+            coords = data.buy.coords,
+            distance = 10,
+        })
+
+        function apartPoint:onEnter()
+            lib.requestModel(data.buy.model, 10000)
+
+            data.buy.ped = CreatePed(0, data.buy.model, data.buy.coords.x, data.buy.coords.y, data.buy.coords.z-1, data.buy.coords.w, false, false)
+            SetModelAsNoLongerNeeded(data.buy.model)
+
+            TaskStartScenarioInPlace(data.buy.ped, 'PROP_HUMAN_STAND_IMPATIENT', 0, true)
+            FreezeEntityPosition(data.buy.ped, true)
+            SetEntityInvincible(data.buy.ped, true)
+            SetBlockingOfNonTemporaryEvents(data.buy.ped, true)
+            exports.ox_target:addLocalEntity(data.buy.ped, {
+                {
+                    label = "Buy Appartment",
+                    distance = 5,
+                    onSelect = function()
+                        TriggerServerEvent('qbx_properties:server:apartmentSelect', i)
+                    end,
+                },
+            })
+        end
+
+        function apartPoint:onExit()
+            exports.ox_target:removeLocalEntity(data.buy.ped)
+            if DoesEntityExist(data.buy.ped) then
+                DeletePed(data.buy.ped)
+            end
+            data.buy.ped = nil
+        end
+
+        points[#points + 1] = apartPoint
     end
 
     properties = lib.callback.await('qbx_properties:callback:loadProperties')
@@ -416,6 +454,14 @@ CreateThread(function()
             end
         end
         Wait(sleep)
+    end
+end)
+
+AddEventHandler('onResourceStop', function(resource)
+    if GetCurrentResourceName() == resource then
+        for i=1, #points do
+            points[i]:remove()
+        end
     end
 end)
 
@@ -494,6 +540,32 @@ CreateThread(function()
     -- Based on point show a ui [E] Access Garage
     -- Access Garage has properties listed based on user access (keyholder + owner)
     -- On Property Select, car gets stored to property garage based on available slots
+    -- Register points for dropoff
+    -- Based on point show a ui [E] Access Garage
+    -- Access Garage has properties listed based on user access (keyholder + owner)
+    -- On Property Select, car gets stored to property garage based on available slots
+
+    local point = lib.points.new({
+        coords = vec3(532.1072, -2637.6689, -48.9999),
+        distance = 2
+    })
+
+    function point:onEnter()
+        lib.showTextUI('[E] Exit Garage', {
+            position = 'right-center'
+        })
+    end
+
+    function point:onExit()
+        lib.hideTextUI()
+    end
+
+    function point:nearby()
+        if IsControlJustPressed(0, 38) then
+            ExitGarage()
+        end
+    end
+
     for i = 1, #Garages do
         if not blips[Garages[i].dropOff] then
             blips[Garages[i].dropOff] = CreateBlip(Garages[i].dropOff, "Appartment Garage", 225)
@@ -537,32 +609,3 @@ function ExitGarage()
     
     DoScreenFadeIn(1000)
 end
-
--- Garage Exit Prompt
-CreateThread(function()
-    -- Register points for dropoff
-    -- Based on point show a ui [E] Access Garage
-    -- Access Garage has properties listed based on user access (keyholder + owner)
-    -- On Property Select, car gets stored to property garage based on available slots
-
-    local point = lib.points.new({
-        coords = vec3(532.1072, -2637.6689, -48.9999),
-        distance = 2
-    })
-
-    function point:onEnter()
-        lib.showTextUI('[E] Exit Garage', {
-            position = 'right-center'
-        })
-    end
-
-    function point:onExit()
-        lib.hideTextUI()
-    end
-
-    function point:nearby()
-        if IsControlJustPressed(0, 38) then
-            ExitGarage()
-        end
-    end
-end)

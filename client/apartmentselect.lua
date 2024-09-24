@@ -230,9 +230,12 @@ local function SetupContext()
                     Wait(1000) -- Wait for player to spawn correctly so clothing menu can load in nice
                     TriggerServerEvent('QBCore:Server:OnPlayerLoaded')
                     TriggerEvent('QBCore:Client:OnPlayerLoaded')
-                    SetCamActive(previewCam, false)
-                    DestroyCam(previewCam, true)
-                    --StopCamera()
+                    if previewCam then
+                        SetCamActive(previewCam, false)
+                        DestroyCam(previewCam, true)
+                        previewCam = nil
+                    end
+                    DoScreenFadeIn(1000)
                 else
                     lib.showContext('qbx_properties_appartmentSelect')
                 end
@@ -251,10 +254,10 @@ end
     
 -- print('OxLib Way')
 RegisterNetEvent('apartments:client:setupSpawnUI', function()
-    Wait(400)
-    ManagePlayer()
-    SetupCamera(true)
-    SetupContext()
+    -- Wait(400)
+    Wait(1000) -- Wait for player to spawn correctly so clothing menu can load in nice
+    TriggerServerEvent('QBCore:Server:OnPlayerLoaded')
+    TriggerEvent('QBCore:Client:OnPlayerLoaded')
 end)
 
 -- Original Way

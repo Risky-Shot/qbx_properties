@@ -50,7 +50,6 @@ function parkVehicle(garageId)
             return 
         end
 
-        --kickOutPeds(cache.vehicle)
         TaskLeaveVehicle(-1, cache.vehicle, 1)
 
         Wait(1000)

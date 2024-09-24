@@ -288,7 +288,6 @@ lib.callback.register('qbx_properties:server:isParkable', function(source, netId
     local vehicle = NetworkGetEntityFromNetworkId(netId)
     local vehicleId = Entity(vehicle).state.vehicleid or exports.qbx_vehicles:GetVehicleIdByPlate(GetVehicleNumberPlateText(vehicle))
 
-
     if not vehicleId then return false end
 
     local playerVehicle = exports.qbx_vehicles:GetPlayerVehicle(vehicleId)

@@ -4,7 +4,10 @@ RegisterNetEvent('qbx_properties:server:apartmentSelect', function(apartmentInde
     if not ApartmentOptions[apartmentIndex] then return end
 
     local hasApartment = MySQL.single.await('SELECT * FROM appartments WHERE owner = ?', {player.PlayerData.citizenid})
-    if hasApartment then return end
+    if hasApartment then 
+        exports.qbx_core:Notify(playerSource, 'You already own an apartment.')
+        return 
+    end
 
     local interior = ApartmentOptions[apartmentIndex].interior
     local interactData = {
@@ -48,6 +51,5 @@ RegisterNetEvent('qbx_properties:server:apartmentSelect', function(apartmentInde
     })
 
     TriggerClientEvent('qbx_properties:client:addProperty', -1, ApartmentOptions[apartmentIndex].enter)
-    TriggerClientEvent('qb-clothes:client:CreateFirstCharacter', playerSource)
     EnterProperty(playerSource, id, true)
 end)
