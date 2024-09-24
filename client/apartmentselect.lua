@@ -1,3 +1,4 @@
+--[[
 local BoardCoords = vec4(-44.19, -585.99, 87.71, 250.0)
 local BoardModel = `tr_prop_tr_planning_board_01a`
 local RenderTarget = 'modgarage_01'
@@ -203,6 +204,7 @@ local function InputHandler()
     StopCamera()
 end
 
+
 local function SetupContext()
     local options = {}
     for i=1, #ApartmentOptions do
@@ -251,6 +253,7 @@ local function SetupContext()
 
     lib.showContext('qbx_properties_appartmentSelect')
 end
+]]--
     
 -- print('OxLib Way')
 RegisterNetEvent('apartments:client:setupSpawnUI', function()

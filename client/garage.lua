@@ -2,7 +2,7 @@ function enterAppartmentGarage(garageId)
     -- Fadeout Here
     lib.callback.await('qbx_properties:server:enterGarage', false, garageId)
     Wait(2000) -- Wait for Proper Bucket Transition
-    local vehicles = lib.callback.await('qbx_properties:server:fetchGarageCars', false, garageId)
+    lib.callback.await('qbx_properties:server:fetchGarageCars', false, garageId)
 end
 
 lib.callback.register("qbx_properties:client:garageOutProgress", function()
