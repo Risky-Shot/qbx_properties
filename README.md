@@ -1,9 +1,11 @@
 ###MODIFIED FOR APL Nation
+
 - Added Garage System for Appartments (owner + keyholder)
-  
+
 ### Installation
 
 From a fresh Qbox build
+
 1. Remove `qbx_apartments`
 2. Remove `qbx_houses`
 3. Either use no spawn system (so the core defaults to last location) or https://github.com/Qbox-project/qbx_spawn/
@@ -22,3 +24,5 @@ From a fresh Qbox build
 <p align="center">
   <img src="https://i.imgur.com/YTHfNGG.gif" alt="pog">
 </p>
+
+---

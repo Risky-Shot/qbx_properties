@@ -70,3 +70,28 @@ RegisterNetEvent('qbx_properties:server:apartmentSelect', function(apartmentInde
     TriggerClientEvent('qbx_properties:client:addProperty', -1, ApartmentOptions[apartmentIndex].enter)
     EnterProperty(playerSource, id, true)
 end)
+
+
+-- Load SpawnCoords for locator
+
+--[[
+
+local properties = lib.callback.await('qbx_properties:client:spawnSelectorCoords', false)
+
+for i=1, #properties do
+    local coords = json.decode(properties[i].coords)
+    table.insert(SpawnLocation, {
+        name = properties[i].property_name,
+        mapCoords = {x = coords.x, y = coords.y},
+        locationType = 'apartment',
+        gameCoords = vec4(coords.x, coords.y, coords.z, 0.0),
+        propertyId = properties[i].id
+    })
+end
+
+-- Event To Trigger On Spawn Event (Make Sure data has locationType, id available in it)
+if data.locationType == 'apartment' then
+    TriggerServerEvent('qbx_properties:server:enterProperty', {id = data.id, isSpawn = true})
+end
+
+]]--

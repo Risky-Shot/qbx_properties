@@ -154,12 +154,20 @@ RegisterNetEvent('qbx_properties:server:enterProperty', function(data)
     EnterProperty(playerSource, propertyId, data.isSpawn)
 end)
 
+--[[
+    returnData = {
+        property_name,
+        owner,
+        id,
+        coords
+    }
+]]
 lib.callback.register('qbx_properties:client:spawnSelectorCoords', function(source)
     local player = exports.qbx_core:GetPlayer(source)
     local properties = MySQL.query.await('SELECT property_name, owner, id, keyholders, coords FROM appartments')
     
     local propertyData = {}
-    
+
     for i = 1, #properties do
         if properties[i].owner == player.PlayerData.citizenid then
             propertyData[#propertyData + 1] = properties[i]
