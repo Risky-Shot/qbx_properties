@@ -135,6 +135,13 @@ local function hasAccess(citizenId, propertyId)
     return false
 end
 
+-- Use This Event To Enter Property 
+--[[
+    data = {
+        id = propertyId,
+        isSpawn = true
+    }
+]]
 RegisterNetEvent('qbx_properties:server:enterProperty', function(data)
     local playerSource = source --[[@as number]]
     local player = exports.qbx_core:GetPlayer(playerSource)
@@ -145,6 +152,28 @@ RegisterNetEvent('qbx_properties:server:enterProperty', function(data)
     end
 
     EnterProperty(playerSource, propertyId, data.isSpawn)
+end)
+
+lib.callback.register('qbx_properties:client:spawnSelectorCoords', function(source)
+    local player = exports.qbx_core:GetPlayer(source)
+    local properties = MySQL.query.await('SELECT property_name, owner, id, keyholders, coords FROM appartments')
+    
+    local propertyData = {}
+    
+    for i = 1, #properties do
+        if properties[i].owner == player.PlayerData.citizenid then
+            propertyData[#propertyData + 1] = properties[i]
+        else
+            local keyholders = json.decode(properties[i].keyholders)
+            for j = 1, #keyholders do
+                if keyholders[j] == player.PlayerData.citizenid then 
+                    propertyData[#propertyData + 1] = properties[i]
+                end
+            end
+        end
+    end
+
+    return propertyData
 end)
 
 RegisterNetEvent('qbx_properties:server:ringProperty', function(data)

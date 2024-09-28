@@ -1,3 +1,14 @@
+-- Add Trigger to Deduct Money
+local function Transaction(source)
+    local appartmentPrice = AppartmentPrice -- From config/server.lua
+
+    if appartmentPrice < 1 then return true end
+
+    -- Deduct Money Here and return true
+
+    return false
+end
+
 RegisterNetEvent('qbx_properties:server:apartmentSelect', function(apartmentIndex)
     local playerSource = source --[[@as number]]
     local player = exports.qbx_core:GetPlayer(playerSource)
@@ -6,6 +17,12 @@ RegisterNetEvent('qbx_properties:server:apartmentSelect', function(apartmentInde
     local hasApartment = MySQL.single.await('SELECT * FROM appartments WHERE owner = ?', {player.PlayerData.citizenid})
     if hasApartment then 
         exports.qbx_core:Notify(playerSource, 'You already own an apartment.')
+        return 
+    end
+
+    -- If Transaction  thenr return
+    if not Transaction(playerSource) then 
+        exports.qbx_core:Notify(playerSource, 'Failed to pay for appartment.')
         return 
     end
 

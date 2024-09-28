@@ -6,6 +6,8 @@ ApartmentStash = {
 -- Do not changes as spawn is configured in this way
 MaxCarsInGarage = 10
 
+-- Money to Buy Appartment | 0 for no buy
+AppartmentPrice = 10000
 
 --[[ TODO : 
 Garage Flow :

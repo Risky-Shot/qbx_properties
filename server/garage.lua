@@ -40,7 +40,7 @@ end)
 
 lib.callback.register('qbx_properties:server:fetchPropertiesForGarage', function(source, coords)
     local player = exports.qbx_core:GetPlayer(source)
-    local properties = MySQL.query.await('SELECT property_name, owner, id, price, rent_interval, keyholders FROM appartments WHERE coords = ?', {json.encode(coords)})
+    local properties = MySQL.query.await('SELECT property_name, owner, id, keyholders FROM appartments WHERE coords = ?', {json.encode(coords)})
     
     local propertyData = {}
     for i = 1, #properties do
@@ -100,13 +100,6 @@ local function SpawnGarageCars(garageId)
             exports.qbx_core:SetEntityBucket(veh, bucket)
         end
     end
-
-    -- Transition Vehicle to bucket ? maybe do in upper loop itself
-    -- for _, value in pairs(garageData[garageId]) do
-    --     local vehicle = NetworkGetEntityFromNetworkId(value)
-    --     -- Check if entity not in bucket ? then set in bucket else skip
-    --     exports.qbx_core:SetEntityBucket(vehicle, bucket)
-    -- end
 end
 
 
@@ -118,38 +111,6 @@ lib.callback.register('qbx_properties:server:fetchGarageCars', function(source, 
     local bucket = 1000 + tonumber(garageId:match(":(%d+)"))
 
     exports.qbx_core:SetPlayerBucket(_source, bucket)
-end)
-
-RegisterCommand("apartcheck", function(source, _)
-    -- local filters = {
-    --     garage = garageId,
-    --     states = 1
-    -- }
-
-    -- local vehicles = exports.qbx_vehicles:GetPlayerVehicles(filters)
-
-    -- for i = 1, #vehicles do
-    --     local vehData = vehicles[i]
-        
-    --     local params = {
-    --         model = joaat("sc1"),
-    --         spawnSource = GarageCarSpawn[i],
-    --         bucket = 0,
-    --         props = vehData.props
-    --     }
-
-    --     local netId, veh = qbx.spawnVehicle(params)
-
-    --     print('Created Vehicle')
-    --     print('-------------------------------------------')
-    --     print(NetworkGetEntityFromNetworkId(netId), veh)
-    --     FreezeEntityPosition(veh, true)
-
-    --     print(vehData.id)
-
-    --     Entity(veh).state.vehId = vehData.id
-    -- end
-    print(json.encode(garageData))
 end)
 
 
