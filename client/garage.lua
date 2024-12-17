@@ -5,10 +5,14 @@ function enterAppartmentGarage(garageId)
     lib.callback.await('qbx_properties:server:fetchGarageCars', false, garageId)
 end
 
+RegisterNetEvent("qbx_properties:client:propertyToGarage", function(appartmentId)
+    enterAppartmentGarage("apartment:"..appartmentId)
+end)
+
 lib.callback.register("qbx_properties:client:garageOutProgress", function()
-    return lib.progressCircle({
+    return lib.progressBar({
         duration = 5000,
-        label = "Wait or [X] to Cancel",
+        label = "Exiting Garage",
         useWhileDead = false,
         canCancel = true,
         disable = {}

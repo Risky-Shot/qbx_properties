@@ -1,10 +1,30 @@
 -- Add Trigger to Deduct Money
-local function Transaction(source)
-    local appartmentPrice = AppartmentPrice -- From config/server.lua
+local function Transaction(source, price)
+    if price and price < 1 then return true end
 
-    if appartmentPrice < 1 then return true end
+    local player  = exports.qbx_core:GetPlayer(playerId)
+    if not player or not player.PlayerData.citizenid then 
+        print('Not Player Found')
+        return false 
+    end
 
-    -- Deduct Money Here and return true
+    local citizenid = player.PlayerData.citizenid
+
+    local playerAccount = exports.ox_banking:GetCharacterAccount(citizenid)
+
+    if not playerAccount then 
+        print('Not Account Found')
+        return false 
+    end
+
+    local accountId = playerAccount.accountId
+
+    local response = exports.ox_banking:RemoveBalance(accountId, price, "Appartment Purchase", false)
+
+    if response.success == true then 
+        print('Paid Money')
+        return true 
+    end
 
     return false
 end
@@ -21,9 +41,9 @@ RegisterNetEvent('qbx_properties:server:apartmentSelect', function(apartmentInde
     end
 
     -- If Transaction  thenr return
-    if not Transaction(playerSource) then 
+    if not Transaction(playerSource, ApartmentOptions[apartmentIndex].price) then 
         exports.qbx_core:Notify(playerSource, 'Failed to pay for appartment.')
-        return 
+        --return 
     end
 
     local interior = ApartmentOptions[apartmentIndex].interior

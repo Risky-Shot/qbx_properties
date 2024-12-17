@@ -29,58 +29,40 @@ ApartmentOptions = {
         label = 'Del Perro Heights Apt',
         description = 'Enjoy ocean views far away from tourists and bums on Del Perro Beach.',
         enter = vec3(-1447.35, -537.84, 34.74),
-		buy = {
-			coords = vec4(-1443.4236, -535.6743, 34.7402, 121.3957),
-			model = `U_M_Y_Ushi`,
-			ped = nil,
-		}
+		panel = vec3(-1441.8552246094, -543.42962646484, 35.256145477295),
+		price = 10000
     },
-	--Remove Due to same area
-    -- {
-    --     interior = 'DellPerroHeightsApt7',
-    --     label = 'Del Perro Heights Apt',
-    --     description = 'Luxury Del Perro Heights apartment complex! For all you voyeurs out there!',
-    --     enter = vec3(-1447.35, -537.84, 34.74)
-    -- },
-    -- {
-    --     interior = '4IntegrityWayApt28',
-    --     label = '4 Integrity Way Apt',
-    --     description = 'This is such an promosing neighborhood, you can literally see the construction from your window!',
-    --     enter = vec3(-59.4, -616.29, 37.36)
-    -- },
-	--
     {
         interior = '4IntegrityWayApt30',
         label = '4 Integrity Way Apt',
         description = 'An apartment so expansive, all your friends will immediately know how much you paid for it.',
         enter = vec3(-47.52, -585.86, 37.95),
-		buy = {
-			coords = vec4(-49.0459, -589.9213, 37.9530, 22.5750),
-			model = `U_M_Y_Ushi`,
-			ped = nil,
-		}
+		panel = vec3(-49.091163635254, -590.41723632812, 38.465553283691),
+		price = 10000
     },
     {
         interior = 'RichardMajesticApt2',
         label = 'Richard Majestic Apt',
         description = 'This breathtaking luxury condo is a stone\'s throw from AKAN Records and a Sperm Donor Clinic.',
         enter = vec3(-936.15, -378.91, 38.96),
-		buy = {
-			coords = vec4(-933.4673, -384.3326, 38.9613, 129.9039),
-			model = `U_M_Y_Ushi`,
-			ped = nil,
-		}
+		panel = vec3(-934.3623046875, -380.06356811523, 39.619285583496),
+		price = 10000
     },
     {
         interior = 'TinselTowersApt42',
         label = 'Tinsel Towers Apt',
         description = 'A picture-perfect lateral living experience in one of Los Santos most sought-after tower blocks.',
         enter = vec3(-614.58, 46.52, 43.59),
-		buy = {
-			coords = vec4(-617.8354, 44.5598, 43.5914, 184.1978),
-			model = `U_M_Y_Ushi`,
-			ped = nil,
-		}
+		panel = vec3(-613.54766845703, 36.970626831055, 44.230236053467),
+		price = 10000
+    },
+	{
+        interior = 'EclipseTowersApt5',
+        label = 'Eclipse Towers Apt',
+        description = 'A picture-perfect lateral living experience in one of Los Santos most sought-after tower blocks.',
+        enter = vec3(-773.0326, 317.7435, 85.6626),
+		panel = vec3(-778.83325195312, 313.49774169922, 86.136169433594),
+		price = 10000
     },
 }
 
@@ -122,41 +104,32 @@ Garages = {
 			vec4(-1032.8413, -408.0217, 32.9061, 26.9098)
 		},
 		dropOff = vec3(-1038.7344, -403.4747, 32.9058)
-	}
+	},
+	-- Eclips Towers
+	{
+		appartmentCoords = vec3(-773.0326, 317.7435, 85.6626),
+		spawn = {
+			vec4(-791.6827, 331.8393, 85.2760, 180.9388),
+			vec4(-800.3967, 332.2888, 85.2768, 180.9118)
+		},
+		dropOff = vec3(-796.2831, 317.8094, 85.2479)
+	},
 }
 
 
 Interiors = {
-	[`furnitured_midapart`] = {
-		exit = vec3(1.46, -10.33, 0.0),
-		clothing = vec3(6.03, 9.3, 0.0),
-		stash = vec3(6.91, 3.94, 0.0),
-		logout = vec3(4.07, 7.89, 0.0)
-	},
-	['4IntegrityWayApt28'] = {
-		exit = vec3(-30.48, -595.39, 80.03),
-		clothing = vec3(-38.25, -589.71, 78.83),
-		stash = vec3(-12.1, -598.26, 79.43),
-		logout = vec3(-37.14, -583.65, 78.83)
-	},
 	['4IntegrityWayApt30'] = {
-		exit = vec3(-19.38, -581.63, 90.11),
+		exit = vec3(-17.7533, -589.4276, 90.1148),
 		clothing = vec3(-38.11, -583.48, 83.92),
 		stash = vec3(-26.95, -588.61, 90.12),
 		logout = vec3(-37.28, -577.89, 83.91)
 	},
     ['DellPerroHeightsApt4'] = {
-        exit = vec3(-1457.2, -533.53, 74.04),
+        exit = vec3(-1452.8683, -539.8164, 74.0443),
         clothing = vec3(-1449.88, -549.25, 72.84),
         stash = vec3(-1466.83, -527.03, 73.44),
         logout = vec3(-1454.08, -553.25, 72.84)
     },
-	['DellPerroHeightsApt7'] = {
-		exit = vec3(-1458.5, -520.89, 56.93),
-		clothing = vec3(-1467.46, -537.28, 50.73),
-		stash = vec3(-1457.44, -531.26, 56.94),
-		logout = vec3(-1471.83, -533.47, 50.72)
-	},
 	['RichardMajesticApt2'] = {
 		exit = vec3(-913.51, -365.55, 114.27),
 		clothing = vec3(-903.79, -363.99, 113.07),
@@ -169,17 +142,11 @@ Interiors = {
 		stash = vec3(-622.36, 55.09, 97.6),
 		logout = vec3(-593.71, 50.18, 97.0)
 	},
-	['GTAOHouseMid1'] = {
-		exit = vec3(346.47, -1011.89, -99.2),
-		clothing = vec3(350.84, -993.9, -99.2),
-		stash = vec3(351.98, -998.8, -99.2),
-		logout = vec3(349.24, -995.09, -99.2)
-	},
-	['GTAOHouseLow1'] = {
-		exit = vec3(266.21, -1007.12, -100.98),
-		clothing = vec3(260.4, -1003.27, -99.01),
-		stash = vec3(265.96, -999.37, -99.01),
-		logout = vec3(262.91, -1002.92, -99.01)
+	['EclipseTowersApt5'] = { -- -778.5064, 331.3159, 211.3971, 90.7223
+		exit = vec3(-784.1286, 323.5202, 211.9972),
+		clothing = vec3(-793.3002, 326.3842, 210.7967),
+		stash = vec3(-766.8076, 328.4537, 211.3966),
+		logout = vec3(-794.3795, 332.3813, 210.7967)
 	},
 }
 

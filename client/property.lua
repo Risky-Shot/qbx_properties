@@ -103,6 +103,19 @@ local function prepareDoorbellMenu()
     lib.showContext('qbx_properties_doorbellMenu')
 end
 
+local function prepareNameMenu()
+    local property_name = lib.callback.await('qbx_properties:callback:requestPropertyName')
+    
+    local input = lib.inputDialog('Update Property Name', {
+        {type = 'input', label = 'Property Name', description = 'Set a name for this property', required = true, default = property_name, min= 1, max = 20},
+    })
+    
+    if not input then return end
+
+    TriggerServerEvent('qbx_properties:server:updatePropertyName', input[1])
+    -- Update Property Name
+end
+
 local function prepareManageMenu()
     local hasAccess = lib.callback.await('qbx_properties:callback:checkAccess')
     if not hasAccess then exports.qbx_core:Notify(locale('notify.no_access'), 'error') return end
@@ -128,6 +141,13 @@ local function prepareManageMenu()
             icon = 'shrimp',
             onSelect = function()
                 ToggleDecorating()
+            end
+        },
+        {
+            title = locale('menu.change_name'),
+            icon = 'pen',
+            onSelect = function()
+                prepareNameMenu()
             end
         }
     }
@@ -157,67 +177,168 @@ local function prepareManageMenu()
     lib.showContext('qbx_properties_manageMenu')
 end
 
+local interactionZones = {}
+
+local appartmentPoints = {}
+
 local function checkInteractions()
     local interactOptions = {
         ['stash'] = function(coords)
-            qbx.drawText3d({ coords = coords, text = locale('drawtext.stash') })
-            if IsControlJustPressed(0, 38) then
-                TriggerServerEvent('qbx_properties:server:openStash')
-            end
+            local point = lib.points.new({
+                coords = coords,
+                distance = 2,
+                onEnter = function()
+                    lib.showTextUI(locale('drawtext.stash'), {position = 'left-center'})
+                    lib.registerRadial({
+                        id = 'appartments:stashMenu',
+                        items = {
+                            {
+                                icon = 'box-open',
+                                label = 'Access Stash',
+                                onSelect = function()
+                                    TriggerServerEvent('qbx_properties:server:openStash')
+                                end
+                            }
+                        }
+                    })
+                    lib.addRadialItem({
+                        id = 'appartments:mainmenu',
+                        icon = 'house',
+                        label = 'Appartment',
+                        menu = 'appartments:stashMenu'
+                    })
+                    print('Entered Stash Area')
+                end,
+                onExit = function()
+                    lib.hideTextUI()
+                    lib.removeRadialItem('appartments:mainmenu')
+                    print('Left Stash Area')
+                end,
+            })
+
+            appartmentPoints[#appartmentPoints+1] = point
         end,
         ['exit'] = function(coords)
-            qbx.drawText3d({ coords = coords, text = locale('drawtext.exit') })
-            if IsControlJustPressed(0, 38) then
-                DoScreenFadeOut(1000)
-                while not IsScreenFadedOut() do Wait(0) end
-                TriggerServerEvent('qbx_properties:server:exitProperty')
-            end
-            if IsControlJustPressed(0, 47) then
-                prepareManageMenu()
-            end
+            local point = lib.points.new({
+                coords = coords,
+                distance = 2,
+                onEnter = function()
+                    lib.showTextUI(locale('drawtext.exit'), {position = 'left-center'})
+                    print('Entered Exit Area')
+                    lib.registerRadial({
+                        id = 'appartments:exitMenu',
+                        items = {
+                            {
+                                icon = 'door-open',
+                                label = 'Exit Appartment',
+                                onSelect = function()
+                                    DoScreenFadeOut(1000)
+                                    while not IsScreenFadedOut() do Wait(0) end
+                                    TriggerServerEvent('qbx_properties:server:exitProperty')
+                                end
+                            },
+                            {
+                                icon = 'bars-progress',
+                                label = 'Manage Appartment',
+                                onSelect = function()
+                                    prepareManageMenu()
+                                end
+                            },
+                            {
+                                icon = 'warehouse',
+                                label = 'Enter Garage',
+                                onSelect = function()
+                                    DoScreenFadeOut(1000)
+                                    while not IsScreenFadedOut() do Wait(0) end
+                                    TriggerServerEvent('qbx_properties:server:exitPropertyToGarage')
+                                end
+                            }
+                        }
+                    })
+                    lib.addRadialItem({
+                        id = 'appartments:mainmenu',
+                        icon = 'house',
+                        label = 'Appartment',
+                        menu = 'appartments:exitMenu'
+                    })
+                end,
+                onExit = function()
+                    lib.hideTextUI()
+                    lib.removeRadialItem('appartments:mainmenu')
+                    print('Left Exit Area')
+                end,
+            })
+
+            appartmentPoints[#appartmentPoints+1] = point
         end,
         ['clothing'] = function(coords)
-            qbx.drawText3d({ coords = coords, text = locale('drawtext.clothing') })
-            if IsControlJustPressed(0, 38) then
-                exports['illenium-appearance']:startPlayerCustomization(function(appearance)
-                    if appearance then
-                        TriggerServerEvent("illenium-appearance:server:saveAppearance", appearance)
+            local point = lib.points.new({
+                coords = coords,
+                distance = 2,
+                onEnter = function()
+                    lib.showTextUI(locale('drawtext.clothing'), {position = 'left-center'})
+                    print('Entered Clothing Area')
+                end,
+                onExit = function()
+                    lib.hideTextUI()
+                    print('Left Clothing Area')
+                end,
+                nearby = function(data)
+                    if data.currentDistance < 2.0 then
+                        if IsControlJustPressed(0, 38) then
+                            exports['illenium-appearance']:startPlayerCustomization(function(appearance)
+                                if appearance then
+                                    TriggerServerEvent("illenium-appearance:server:saveAppearance", appearance)
+                                end
+                            end, {
+                                components = true, componentConfig = { masks = true, upperBody = true, lowerBody = true, bags = true, shoes = true, scarfAndChains = true, bodyArmor = true, shirts = true, decals = true, jackets = true },
+                                props = true, propConfig = { hats = true, glasses = true, ear = true, watches = true, bracelets = true },
+                                enableExit = true,
+                            })
+                        end
+                        if IsControlJustPressed(0, 47) then
+                            TriggerEvent('illenium-appearance:client:openOutfitMenu')
+                        end
                     end
-                end, {
-                    components = true, componentConfig = { masks = true, upperBody = true, lowerBody = true, bags = true, shoes = true, scarfAndChains = true, bodyArmor = true, shirts = true, decals = true, jackets = true },
-                    props = true, propConfig = { hats = true, glasses = true, ear = true, watches = true, bracelets = true },
-                    enableExit = true,
-                })
-            end
-            if IsControlJustPressed(0, 47) then
-                TriggerEvent('illenium-appearance:client:openOutfitMenu')
-            end
+                end
+            })
+
+            appartmentPoints[#appartmentPoints+1] = point
         end,
         ['logout'] = function(coords)
-            qbx.drawText3d({ coords = coords, text = locale('drawtext.logout') })
-            if IsControlJustPressed(0, 38) then
-                DoScreenFadeOut(1000)
-                while not IsScreenFadedOut() do Wait(0) end
-                TriggerServerEvent('qbx_properties:server:logoutProperty')
-            end
+            local point = lib.points.new({
+                coords = coords,
+                distance = 2,
+                onEnter = function()
+                    lib.showTextUI(locale('drawtext.logout'), {position = 'left-center'})
+                    print('Entered Logout Area')
+                end,
+                onExit = function()
+                    lib.hideTextUI()
+                    print('Left Logout Area')
+                end,
+                nearby = function(data)
+                    if data.currentDistance < 2.0 then
+                        if IsControlJustPressed(0, 38) then
+                            DoScreenFadeOut(1000)
+                            while not IsScreenFadedOut() do Wait(0) end
+                            TriggerServerEvent('qbx_properties:server:logoutProperty')
+                        end
+                    end
+                end
+            })
+
+            appartmentPoints[#appartmentPoints+1] = point
         end,
     }
-    CreateThread(function()
-        while insideProperty do
-            local sleep = 800
-            local playerCoords = GetEntityCoords(cache.ped)
-            for i = 1, #interactions do
-                if #(playerCoords - interactions[i].coords) < 1.5 and not IsDecorating then
-                    sleep = 0
-                    interactOptions[interactions[i].type](interactions[i].coords)
-                end
-            end
-            Wait(sleep)
-        end
-    end)
+
+    for i = 1, #interactions do
+        interactOptions[interactions[i].type](interactions[i].coords)
+    end
 end
 
 RegisterNetEvent('qbx_properties:client:updateInteractions', function(interactionsData, isRental)
+    print('Entered Property')
     DoScreenFadeIn(1000)
     interactions = interactionsData
     insideProperty = true
@@ -266,6 +387,11 @@ RegisterNetEvent('qbx_properties:client:unloadProperty', function()
     end
     interiorShell = nil
     DecorationObjects = {}
+    Wait(1000)
+    for k, point in pairs(appartmentPoints) do
+        point:remove()
+        appartmentPoints[k] = nil
+    end
 end)
 
 local function singlePropertyMenu(property, noBackMenu)
@@ -390,78 +516,72 @@ function PreparePropertyMenu(propertyCoords)
     end
 end
 
-local points = {}
-
+local zones = {}
+-- TriggerServerEvent('qbx_properties:server:apartmentSelect', i)
 CreateThread(function()
+    properties = lib.callback.await('qbx_properties:callback:loadProperties')
     for i = 1, #ApartmentOptions do
-        local data = ApartmentOptions[i]
+        local appartData = ApartmentOptions[i]
 
-        if not blips[data.enter] then
-            blips[data.enter] = CreateBlip(data.enter, data.label, 40)
+        if not blips[appartData.enter] then
+            blips[appartData.enter] = CreateBlip(appartData.enter, appartData.label, 40)
         end
 
-        local apartPoint = lib.points.new({
-            coords = data.buy.coords,
-            distance = 10,
-        })
-
-        function apartPoint:onEnter()
-            lib.requestModel(data.buy.model, 10000)
-
-            data.buy.ped = CreatePed(0, data.buy.model, data.buy.coords.x, data.buy.coords.y, data.buy.coords.z-1, data.buy.coords.w, false, false)
-            SetModelAsNoLongerNeeded(data.buy.model)
-
-            TaskStartScenarioInPlace(data.buy.ped, 'PROP_HUMAN_STAND_IMPATIENT', 0, true)
-            FreezeEntityPosition(data.buy.ped, true)
-            SetEntityInvincible(data.buy.ped, true)
-            SetBlockingOfNonTemporaryEvents(data.buy.ped, true)
-            exports.ox_target:addLocalEntity(data.buy.ped, {
+        local zone = exports.ox_target:addSphereZone({
+            coords = appartData.panel,
+            radius = 0.25,
+            debug = true,
+            drawSprite = true,
+            options = {
                 {
-                    label = "Buy Appartment",
-                    distance = 5,
-                    onSelect = function()
-                        TriggerServerEvent('qbx_properties:server:apartmentSelect', i)
+                    label = "Enter Properties",
+                    distance = 2.0,
+                    icon = 'fa-solid fa-house',
+                    onSelect = function(data)
+                        for i = 1, #properties do
+                            if #(data.coords - properties[i].xyz) < 10.0 then
+                                PreparePropertyMenu(properties[i])
+                            end
+                        end
                     end,
                 },
-            })
-        end
+                {
+                    label = "Enter Garages",
+                    distance = 2.0,
+                    icon = 'fa-solid fa-car',
+                    onSelect = function(data)
+                        for i = 1, #properties do
+                            if #(data.coords - properties[i].xyz) < 10.0 then
+                                accessGarageMenu(properties[i])
+                            end
+                        end
+                    end,
+                },
+                {
+                    label = "Buy Appartment",
+                    distance = 2.0,
+                    icon = 'fa-solid fa-dollar-sign',
+                    onSelect = function(data)
+                        local alert = lib.alertDialog({
+                            header = appartData.label,
+                            content = 'Are you sure you want to buy appartment ?  \n Price : $'..appartData.price,
+                            centered = true,
+                            cancel = true
+                        })
 
-        function apartPoint:onExit()
-            exports.ox_target:removeLocalEntity(data.buy.ped)
-            if DoesEntityExist(data.buy.ped) then
-                DeletePed(data.buy.ped)
-            end
-            data.buy.ped = nil
-        end
-
-        points[#points + 1] = apartPoint
-    end
-
-    properties = lib.callback.await('qbx_properties:callback:loadProperties')
-    while true do
-        local sleep = 800
-        local playerCoords = GetEntityCoords(cache.ped)
-        for i = 1, #properties do
-            if #(playerCoords - properties[i].xyz) < 1.6 then
-                sleep = 0
-                qbx.drawText3d({ coords = properties[i].xyz, text = locale('drawtext.view_property') })
-                if IsControlJustPressed(0, 38) then
-                    PreparePropertyMenu(properties[i])
-                end
-                if IsControlJustPressed(0, 182) then
-                    accessGarageMenu(properties[i])
-                end
-            end
-        end
-        Wait(sleep)
+                        if alert == 'confirm' then
+                            TriggerServerEvent('qbx_properties:server:apartmentSelect', i)
+                        end
+                    end,
+                },
+            }
+        })
     end
 end)
 
 AddEventHandler('onResourceStop', function(resource)
     if GetCurrentResourceName() == resource then
-        for i=1, #points do
-            points[i]:remove()
-        end
+    
     end
 end)
 
@@ -589,6 +709,7 @@ CreateThread(function()
         function point:nearby()
             if IsControlJustPressed(0, 38) then
                 for j=1, #properties do
+                    print(Garages[i].appartmentCoords, properties[j], #(Garages[i].appartmentCoords - properties[j]))
                     if #(Garages[i].appartmentCoords - properties[j]) < 1.0 then
                         accessGarageMenu(properties[j], Garages[i].spawn)
                     end

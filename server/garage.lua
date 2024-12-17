@@ -29,6 +29,8 @@ local function isKeyholderToAppartment(citizenId, garageId)
 end
 
 lib.callback.register('qbx_properties:server:enterGarage', function(source, garageId)
+    local player = exports.qbx_core:GetPlayer(source)
+
     -- HardCoded For Now
     local garageCoords = vec4(532.1072, -2637.6689, -48.9999, 91.4480)
 
@@ -160,10 +162,6 @@ RegisterServerEvent('baseevents:enteredVehicle', function(veh, seat, modelName, 
     exports.qbx_core:SetPlayerBucket(_source, 0)
 
     TriggerClientEvent("qbx_properties:client:exitGarageStart", _source, vehId)
-end)
-
-RegisterServerEvent('baseevents:leftVehicle', function(veh, seat, modelName, netId)
-
 end)
 
 lib.callback.register('qbx_properties:server:exitGarageFinish', function(source, vehId)

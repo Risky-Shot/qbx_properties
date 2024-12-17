@@ -34,7 +34,8 @@
         "show_owned_properties": "Only show properties you own",
         "interior_preview": "Interior Preview",
         "start_decorating": "Start Decorating",
-        "decorating_categories": "Categories"
+        "decorating_categories": "Categories",
+        "change_name": "Change Property Name"
     },
     "instructButtons": {
         "up": "Up",
@@ -42,8 +43,8 @@
         "submit": "Submit"
     },
     "drawtext": {
-        "stash": "[E] - Stash",
-        "exit": "[E] - Exit | [G] - Manage",
+        "stash": "Hold Z to access stash.",
+        "exit": "Hold Z to exit/manage.",
         "clothing": "[E] - Clothing | [G] - Outfits",
         "logout": "[E] - Logout",
         "view_property": "[E] - View Property | [L] - Enter Garage"

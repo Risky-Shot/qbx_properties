@@ -14,7 +14,7 @@ function EnterProperty(playerSource, id, isSpawn)
 
     local playerCoords = GetEntityCoords(GetPlayerPed(playerSource))
 
-    if not isSpawn and #(playerCoords - propertyCoords) > 8.0 then 
+    if not isSpawn and #(playerCoords - propertyCoords) > 15.0 then 
         print('Too Far To Enter')
         return 
     end
@@ -31,7 +31,7 @@ function EnterProperty(playerSource, id, isSpawn)
             type = 'stash',
             coords = vec3(stashCoords.x, stashCoords.y, stashCoords.z)
         }
-        exports.ox_inventory:RegisterStash(string.format('qbx_properties_%s', property.property_name), string.format('Property: %s', property.property_name), stashes[i].slots, stashes[i].maxWeight, property.owner)
+        exports.ox_inventory:RegisterStash(string.format('apartments_%s', property.id), string.format('Property: %s', property.property_name), stashes[i].slots, stashes[i].maxWeight, property.owner)
     end
 
     if isInteriorShell then
@@ -102,6 +102,15 @@ end
 
 RegisterNetEvent('qbx_properties:server:exitProperty', function()
     exitProperty(source --[[@as number]])
+end)
+
+RegisterNetEvent('qbx_properties:server:exitPropertyToGarage', function()
+    local source = source
+
+    local lastProperty = enteredProperty[source]
+    exitProperty(source --[[@as number]])
+    
+    TriggerClientEvent('qbx_properties:client:propertyToGarage', source, lastProperty)
 end)
 
 AddEventHandler('QBCore:Server:OnPlayerUnload', function(source)
@@ -265,6 +274,17 @@ lib.callback.register('qbx_properties:callback:requestRingers', function(source)
     return ringers
 end)
 
+lib.callback.register('qbx_properties:callback:requestPropertyName', function(source)
+    local propertyId = enteredProperty[source]
+    
+    local result = MySQL.single.await('SELECT id, owner, property_name FROM appartments WHERE id = ?', {propertyId})
+    local owner = exports.qbx_core:GetPlayer(source)
+
+    if owner.PlayerData.citizenid ~= result.owner then return end
+
+    return result.property_name
+end)
+
 lib.callback.register('qbx_properties:callback:checkAccess', function(source)
     local propertyId = enteredProperty[source]
     local result = MySQL.single.await('SELECT owner FROM appartments WHERE id = ?', {propertyId})
@@ -288,6 +308,22 @@ RegisterNetEvent('qbx_properties:server:letRingerIn', function(visitorCid)
             table.remove(ring[propertyId], i)
             break
         end
+    end
+end)
+
+RegisterNetEvent('qbx_properties:server:updatePropertyName', function(propertyName)
+    local playerSource = source --[[@as number]]
+    local player = exports.qbx_core:GetPlayer(playerSource)
+    local propertyId = enteredProperty[playerSource]
+    local result = MySQL.single.await('SELECT owner, property_name FROM appartments WHERE id = ?', {propertyId})
+
+    if player.PlayerData.citizenid ~= result.owner then return end
+
+    local affected = MySQL.update.await('UPDATE appartments SET property_name = ? WHERE id = ?', {propertyName, propertyId})
+
+    if affected > 1 then 
+        exports.qbx_core:Notify(playerSource, 'Name Updated To :'..propertyName, 'success')
+        return 
     end
 end)
 
@@ -361,7 +397,12 @@ RegisterNetEvent('qbx_properties:server:openStash', function()
     local playerSource = source --[[@as number]]
     local propertyId = enteredProperty[playerSource]
     local player = exports.qbx_core:GetPlayer(playerSource)
-    if not hasAccess(player.PlayerData.citizenid, propertyId) then return end
+    if not hasAccess(player.PlayerData.citizenid, propertyId) then 
+        print('No Access of Stash')
+        return 
+    end
+
+    print('Open Stash for',propertyId)
 
     exports.ox_inventory:forceOpenInventory(playerSource, 'stash', { id = string.format('apartments_%s', propertyId) })
 end)
